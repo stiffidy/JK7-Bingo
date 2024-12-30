@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timerInterval);
         elapsedSeconds = 0;
         timerStarted = false;
-        timerDisplay.textContent = 'Time: Click any card to start the timer';
+        timerDisplay.textContent = 'Time: Click any card to start the timer!';
     }
 
     function startTimer() {
