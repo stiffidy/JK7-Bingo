@@ -11,18 +11,20 @@
 
         <div class="bingo-container">
             <div class="bingo-card" id="bingo-card"></div>
+            <div class="frame" id="info">Seed: <span id="seed-display"></span></div>
         </div>
 
         <div class="controls-container">
             <h1 class="bingo-header">Jura Kalniņa Bingo</h1>
-            <div class="frame" id="info">Seed: <span id="seed-display"></span></div>
             <div class="frame timer" id="timer">Time: Click any card to start the timer</div>
             <button id="generate-button" class="styled-button">Generate New Card</button>
         </div>
     </div>
 
     <div class="popup" id="popup">
-        <h2>Rohs!</h2>
+        <h2>Apsveicu, uzvarēji.</h2>
+        <h3>Fake uzvara?</h3>
+        <p id="time-spent"></p>
         <button onclick="closePopup()">Close</button>
     </div>
 
@@ -38,6 +40,7 @@
         const overlay = document.getElementById('overlay');
         const generateButton = document.getElementById('generate-button');
         const clickSound = document.getElementById('click-sound');
+        const timeSpentDisplay = document.getElementById('time-spent');
 
         let elapsedSeconds = 0;
         let timerInterval;
@@ -65,9 +68,26 @@
             timerStarted = true;
             timerInterval = setInterval(() => {
                 elapsedSeconds++;
-                timerDisplay.textContent = `Elapsed Time: ${elapsedSeconds}s`;
+                timerDisplay.textContent = `Time: ${formatTime(elapsedSeconds)}`;
             }, 1000);
         }
+
+        function formatTime(seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        let formattedTime = '';
+        if (hrs > 0) {
+            formattedTime += `${hrs}h `;
+        }
+        if (mins > 0 || hrs > 0) {
+            formattedTime += `${mins}m `;
+        }
+        formattedTime += `${secs}s`;
+
+        return formattedTime;
+    }
 
         async function generateCard() {
             const bingoItems = await fetchBingoItems();
@@ -129,17 +149,28 @@
             }
         }
 
-        function showPopup() {
-            popup.style.display = 'block';
-            overlay.style.display = 'block';
-            clearInterval(timerInterval);
-            gameWon = true;
-        }
+        function disableScrolling() {
+        document.body.style.overflow = 'hidden';
+    }
 
-        function closePopup() {
-            popup.style.display = 'none';
-            overlay.style.display = 'none';
-        }
+    function enableScrolling() {
+        document.body.style.overflow = 'auto';
+    }
+
+    function showPopup() {
+        gameWon = true;
+        clearInterval(timerInterval);
+        timeSpentDisplay.textContent = `Time: ${formatTime(elapsedSeconds)}`;
+        popup.style.display = 'block';
+        overlay.style.display = 'block';
+        disableScrolling();
+    }
+
+    function closePopup() {
+        popup.style.display = 'none';
+        overlay.style.display = 'none';
+        enableScrolling();
+    }
 
         function hashCode(str) {
             let hash = 0;
